@@ -1,80 +1,65 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include"cpu_monitor.h"
 #include<unistd.h>
-
-#define CPU_LINE 100
-char a[200];
-int get_cpu_monitor()  
-{                         
-    FILE* fp;
-    fp = fopen("/proc/stat", "r");
-    char file[CPU_LINE];
-    if (!fp)
-    {
-        perror("Cannot open : ");
-        return -1;
-    }
-
-    else
-    {
-        while (fgets(file, CPU_LINE, fp) != NULL)
-        {
-            char* p = strstr(file, "cpu");
-            if (p == NULL)
-                continue;
-            if (strncmp(file, "cpu", 3) == 0 && file[3] == ' ')
-                strcpy(a, file);
-            return 1;
+int read_cpu_stats(cpu_status_t *stats)
+{
+  printf("DEBUG: Attempting to open /proc/stat\n");
+  FILE *fp=fopen("/proc/stat","r");
+  if(!fp)
+  {
+   perror("Cannot open /proc/stat");
+   return -1;
+  }
+  printf("DEBUG: File opened successfully\n");
+  char line[256];
+  while(fgets(line, sizeof(line), fp))
+  {
+   if (strncmp(line,"cpu ",4)==0)
+   {
+   	unsigned long user, nice, system, idle, iowait, irq, softirq, steal;
+	int matched = sscanf(line + 4, "%lu %lu %lu %lu %lu %lu %lu %lu",
+		&user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal);
+	if (matched >= 4) 
+		{
+                fclose(fp);
+                // 计算总时间和空闲时间
+                stats->total_time = user + nice + system + idle + iowait + irq + softirq + steal;
+                stats->idle_time = idle + iowait;
+                return 0;
         }
-    }
+   }
 
+
+  }
+  fclose(fp);
+  return -1;
+  
 }
 
-void printf_cpu_monitor()
+float calculate_cpu_usage(const cpu_status_t *prev,const cpu_status_t *curr)
 {
-    if (get_cpu_monitor())
-    {
-        puts(a);         
+  if (curr->total_time <= prev->total_time) 
+  	{
+        return 0.0f;
     }
+    
+    unsigned long total_delta = curr->total_time - prev->total_time;
+    unsigned long idle_delta = curr->idle_time - prev->idle_time;
+    
+    // 避免除零错误
+    if (total_delta == 0) 
+	{
+        return 0.0f;
+    }
+    
+    return 100.0f * (1.0f - (float)idle_delta / (float)total_delta);
 }
-void printf_cpu_usage()
+void print_cpu_usage(const cpu_status_t *prev, const cpu_status_t *curr) 
 {
-    long num[10] = { 0 };
-    char jug[2] = " ";
-    char* token = strtok(a, jug);
-    int i = 0;
-    while (token != NULL && i < 10)
-    {
-        token = strtok(NULL, jug);
-        if (token != NULL)
-        {
-            num[i] = strtol(token, NULL, 10);  
-            i++;
-        }
-    }
-    static int total_old = 0, idle_old = 0;
-    double usage;
-    int total_new = 0, idle_new = 0;
-    int total_delta = 0, idle_delta = 0;
-    total_old = total_new;
-    idle_old = idle_new;
-    for (i = 0; i < 10; i++)
-    {
-        total_new = total_new + num[i];
-        if (i == 3 || i == 4)
-            idle_new += num[i];
-    }
-    total_delta = total_new - total_old;
-    idle_delta = idle_new - idle_old;
-
-    usage = 1 - (double)idle_delta / total_delta;
-
-    printf("CPU usage is:%.2lf%%\n", usage * 100);
+    float usage = calculate_cpu_usage(prev, curr);
+    printf("CPU Usage: %.1f%%\n", usage);
 }
-void printf_cpu()
-{
-    printf_cpu_monitor();
-    printf_cpu_usage();
-}
+
 

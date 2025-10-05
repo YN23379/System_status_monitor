@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": 
+    [
+    {
+    "label": "Build (Debug)",
+    "type": "shell",
+    "command": "bash", 
+    "args": [
+        "-c",
+        "mkdir -p build && gcc -g -O0 -Wall -Wextra -Wpedantic function/main.c function/cpu_monitor.c function/Lx_grepMemavailable.c function/Lx_Loadaverage.c -I include -o build/app -lm -fdiagnostics-color=always"
+    ],
+    "group": {
+        "kind": "build", 
+        "isDefault": true
+    },
+    "problemMatcher": ["$gcc"]
+    }
+    ]
+}

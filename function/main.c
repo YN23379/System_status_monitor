@@ -6,14 +6,18 @@
 
 int main()
 {
-  
+  sleep(2);
   cpu_status_t prev_stats={0}, curr_stats={0};
-  if (read_cpu_stats(&prev_stats) != 1) 
+  if (read_cpu_stats(&prev_stats) == -1) 
   	{
         fprintf(stderr, "Initial CPU stats read failed\n");
         return 1;
     }
-    
+  if(collect_cpu_temp()==-1)
+  {
+    printf("Cannot get CPU temp\n");
+    return 1;
+  }
   int i=1;
   while(1)
   {
@@ -29,11 +33,9 @@ int main()
     printf_cpu_temp();
 	  prev_stats = curr_stats;
     printf("---------------------------\n");
-	
-	i++;
-	sleep(3);  //系统采样间隔
+	  i++;
+	  sleep(5);
   }
   return 0;
-
 
 }

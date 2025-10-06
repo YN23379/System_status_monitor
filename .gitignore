@@ -1,0 +1,55 @@
+# 编译文件
+build/
+*.o
+*.a
+*.so
+*.out
+app
+
+# 备份文件
+*~
+*.bak
+*.backup
+
+# 测试文件
+test*
+temp*
+*.tmp
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+EOFcat > .gitignore << EOF
+# 编译文件
+build/
+*.o
+*.a
+*.so
+*.out
+app
+
+# 备份文件
+*~
+*.bak
+*.backup
+
+# 测试文件
+test*
+temp*
+*.tmp
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db

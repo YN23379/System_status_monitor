@@ -1,3 +1,3 @@
 #include"common.h"
-long get_memory_available();
+long collect_cpu_temp();
 void printf_cpu_temp();

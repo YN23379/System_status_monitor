@@ -8,7 +8,7 @@
     "command": "bash", 
     "args": [
         "-c",
-        "mkdir -p build && gcc -g -O0 -Wall -Wextra -Wpedantic function/main.c function/stat_cpu.c function/Memavailable.c function/Loadaverage.c cpu_Tempreture_temp.c -I include -o build/app -lm -fdiagnostics-color=always"
+        "mkdir -p build && gcc -g -O0 -Wall -Wextra -Wpedantic function/main.c function/stat_cpu_collector.c function/Memavailable_collector.c function/Loadaverage_collector.c function/cpu_Tempreture_collector.c -I include -o build/app -lm -fdiagnostics-color=always"
     ],
     "group": {
         "kind": "build", 

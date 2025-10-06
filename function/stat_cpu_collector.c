@@ -1,17 +1,34 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <unistd.h>
-#include"cpu_monitor.h"
+#include"common.h"
+#include"stat_cpu_collector.h"
 int read_cpu_stats(cpu_status_t *stats)
 {
-    FILE *fp = fopen("/proc/stat", "r");
-    if (!fp) { perror("open /proc/stat"); return -1; }
-
-    char line[512];
-    int ok = -1;
-
-    while (fgets(line, sizeof line, fp)) 
+    int fd=open("/proc/stat",O_RDONLY);;//FILE *fp = fopen("/proc/stat", "r");
+    if(fd==-1) //if (!fp) { perror("open /proc/stat"); return -1; }
+    {
+        perror("Open /proc/stat failed");
+        return -1;
+    } 
+    char buffer[512];
+    ssize_t byteread=read(fd,buffer,sizeof(buffer)-1);
+    if(byteread==-1)
+    {
+        perror("Read /proc/stat failed");;
+        return -1;
+    }
+    int flag=-1;
+    buffer[byteread]='\0';
+    char *line=strstr(buffer,"cpu ");
+    if(line!=NULL)
+    {
+        uint64_t user, nice, system, idle, iowait, irq, softirq, steal;
+            // 注意：要求至少8个字段
+        sscanf(line+4, "%lu %lu %lu %lu %lu %lu %lu %lu",
+                           &user,&nice,&system,&idle,&iowait,&irq,&softirq,&steal);
+        stats->idle_time  = idle + iowait;
+        stats->total_time = user + nice + system + idle + iowait + irq + softirq + steal;
+        flag=1;
+    }
+    /*while (fgets(line, sizeof line, fp)) 
     {
         if (strncmp(line, "cpu ", 4) == 0) 
         {
@@ -19,15 +36,15 @@ int read_cpu_stats(cpu_status_t *stats)
             // 注意：要求至少8个字段
             int m = sscanf(line + 4, "%lu %lu %lu %lu %lu %lu %lu %lu",
                            &user,&nice,&system,&idle,&iowait,&irq,&softirq,&steal);
-            if (m < 8) { ok = -1; break; }
+            if (m < 8) { flag = -1; break; }
             stats->idle_time  = idle + iowait;
             stats->total_time = user + nice + system + idle + iowait + irq + softirq + steal;
-            ok = 1;
+            flag = 1;
             break;
         }
-    }
-    fclose(fp);
-    return ok;
+    }*/
+    close(fd);
+    return flag;
 }
 
 float calculate_cpu_usage(const cpu_status_t *prev, const cpu_status_t *curr)

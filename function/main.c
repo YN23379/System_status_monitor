@@ -1,9 +1,8 @@
-#include<stdio.h>
-#include"Lx_grepMemavailable.h"
-#include"Lx_Loadaverage.h"
-#include"cpu_monitor.h"
-#include<unistd.h>
-#include<stdint.h>
+#include"common.h"
+#include"Memavailable_collector.h"
+#include"Loadaverage_collector.h"
+#include"stat_cpu_collector.h"
+#include"cpu_Tempreture_collector.h"
 
 int main()
 {
@@ -27,6 +26,7 @@ int main()
 	  print_load_info();
 	  print_memory_info();
     print_cpu_usage(&prev_stats, &curr_stats);
+    printf_cpu_temp();
 	  prev_stats = curr_stats;
     printf("---------------------------\n");
 	

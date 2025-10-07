@@ -1,18 +1,28 @@
 #include"common.h"
 #include"stat_cpu_collector.h"
+
 int read_cpu_stats(cpu_status_t *stats)
 {
+    static int first_failure = 1;
     int fd=open("/proc/stat",O_RDONLY);;//FILE *fp = fopen("/proc/stat", "r");
     if(fd==-1) //if (!fp) { perror("open /proc/stat"); return -1; }
     {
-        perror("Open /proc/stat failed");
+        if(first_failure)
+        {
+            perror("Open /proc/stat failed");
+            first_failure = 0;
+        }
         return -1;
     } 
     char buffer[512];
     ssize_t byteread=read(fd,buffer,sizeof(buffer)-1);
     if(byteread==-1)
     {
-        perror("Read /proc/stat failed");;
+        if(first_failure)
+        {
+            perror("Read /proc/stat failed");
+            first_failure = 0;
+        }
         return -1;
     }
     int flag=-1;
@@ -49,17 +59,20 @@ int read_cpu_stats(cpu_status_t *stats)
 
 float calculate_cpu_usage(const cpu_status_t *prev, const cpu_status_t *curr)
 {
-    if (curr->total_time <= prev->total_time) return 0.f;
+    if (curr->total_time <= prev->total_time) return -1.0;
     uint64_t total_delta = curr->total_time - prev->total_time;
     uint64_t idle_delta  = curr->idle_time  - prev->idle_time;
-    if (total_delta == 0) return 0.f;
+    if (total_delta == 0) return -1.0;
     return 100.f * (1.f - (float)idle_delta / (float)total_delta);
 }
 void print_cpu_usage(const cpu_status_t *prev, const cpu_status_t *curr)
 {
   float cpu_usage=0.0;
   cpu_usage=calculate_cpu_usage(prev,curr);
+  if(cpu_usage!=-1.0)
   printf("CPU usage is:%.2f%%\n",cpu_usage);
+  else
+  printf("Please examine stst_cpu_collctor.c\n");
 }
 
 

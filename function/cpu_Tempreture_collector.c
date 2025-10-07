@@ -1,20 +1,29 @@
 #include "common.h"
 int collect_cpu_temp()
 {
+    static int first_failure = 1;
     int fd=open("/sys/class/thermal/thermal_zone2/temp",O_RDONLY);
     if(fd==-1)
     {
-        perror("Open /sys/class/thermal/ failed");
+        if(first_failure)
+        {
+            perror("Open /sys/class/thermal/ failed");
+            first_failure = 0;
+        }
         return -1;
     }
     char buffer[10];
     ssize_t byteread=read(fd,buffer,sizeof(buffer)-1);
     if(byteread==-1)
-    {
-        perror(" /sys/class/thermal/ failed");
+    { 
+        if(first_failure)
+        {
+            perror("Read /sys/class/thermal/ failed");
+            first_failure = 0;
+        }
         return -1;
     }
-    long temp;
+    long temp=0;
     sscanf(buffer,"%ld",&temp);
     close(fd);
     return temp;
@@ -23,8 +32,8 @@ int collect_cpu_temp()
 void printf_cpu_temp()
 {
     long temp=collect_cpu_temp()/1000;
-    if(temp==-1) 
-    printf("Please examine stat_cpu_collector.c");
+    if(temp<=0) 
+    printf("Please examine stat_cpu_collector.c\n");
     else 
     printf("CPU Tempreture:%ld C\n",temp);
 }

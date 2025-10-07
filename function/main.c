@@ -16,7 +16,7 @@ int main()
   if(collect_cpu_temp()==-1)
   {
     printf("Cannot get CPU temp\n");
-    return 1;
+    return 0;
   }
   int i=1;
   while(1)
@@ -31,6 +31,7 @@ int main()
 	  print_memory_info();
     print_cpu_usage(&prev_stats, &curr_stats);
     printf_cpu_temp();
+
 	  prev_stats = curr_stats;
     printf("---------------------------\n");
 	  i++;

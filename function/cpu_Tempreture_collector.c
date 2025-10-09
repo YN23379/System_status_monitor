@@ -33,7 +33,7 @@ void printf_cpu_temp()
 {
     long temp=collect_cpu_temp()/1000;
     if(temp<=0) 
-    printf("Please examine stat_cpu_collector.c\n");
+    printf("Please examine cpu_Tempreture_collector.c\n");
     else 
     printf("CPU Tempreture:%ld C\n",temp);
 }

@@ -1,6 +1,6 @@
 #include"common.h"
 #include"Memavailable_collector.h"
-long get_memory_available() 
+long get_available() 
 {
     static int first_failure = 1;
     int fd =open("/proc/meminfo",O_RDONLY);//FILE* file = fopen("/proc/meminfo", "r");
@@ -64,9 +64,9 @@ long get_memory_available()
     close(fd);//fclose(file);
     return mem_kb;
 }
-void print_memory_info()
+void print_available()
 {
-  long mem_kb=get_memory_available();
+  long mem_kb=get_available();
   if(mem_kb!=-1)
   	printf("MemAvailable:%ld kB \n",mem_kb);
   else

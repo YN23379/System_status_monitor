@@ -4,6 +4,7 @@
 #include"stat_cpu_collector.h"
 #include"cpu_Tempreture_collector.h"
 
+
 int main()
 {
   sleep(2);
@@ -28,7 +29,7 @@ int main()
     } 
   	printf("-----System Status(%d)-----\n",i);
 	  print_load_info();
-	  print_memory_info();
+	  print_available();
     print_cpu_usage(&prev_stats, &curr_stats);
     printf_cpu_temp();
 

@@ -12,6 +12,7 @@ float get_system_load() {
         perror("Open /proc/loadavg failed");
         first_failure=0;
       }
+      close(fd);
       return -1.0;
     }
     //if(!fp) return -1.0;
@@ -26,10 +27,11 @@ float get_system_load() {
         perror("Read /proc/loadavg failed");
         first_failure=0;
       }
+      close(fd);            
       return -1.0;
     }
     buffer[flag]='\0';//确保能形成字符串
-    close(fd);             //fclose(file);
+    
     if(sscanf(buffer,"%f",&load)!=1)
     {
       if(first_failure)
@@ -37,20 +39,10 @@ float get_system_load() {
         perror("Sscanf /proc/loadavg failed");
         first_failure=0;
       }
+      close(fd);             //fclose(file);
       return -1.0;
     }
+    close(fd);             
     return load;
 }
-
-void print_load_info()
-{
-  
-  float load =get_system_load();
-  if(load!=-1.0)
-  printf("System Load: %f \n",load);
-  else
-  printf("Please examine Loadaverage.c");
-}
-
-
 

@@ -10,6 +10,7 @@ int collect_cpu_temp()
             perror("Open /sys/class/thermal/ failed");
             first_failure = 0;
         }
+        close(fd);
         return -1;
     }
     char buffer[10];
@@ -21,19 +22,11 @@ int collect_cpu_temp()
             perror("Read /sys/class/thermal/ failed");
             first_failure = 0;
         }
+        close(fd);
         return -1;
     }
     long temp=0;
     sscanf(buffer,"%ld",&temp);
     close(fd);
     return temp;
-}
-
-void printf_cpu_temp()
-{
-    long temp=collect_cpu_temp()/1000;
-    if(temp<=0) 
-    printf("Please examine cpu_Tempreture_collector.c\n");
-    else 
-    printf("CPU Tempreture:%ld C\n",temp);
 }

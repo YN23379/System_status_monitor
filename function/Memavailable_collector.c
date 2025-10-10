@@ -64,16 +64,6 @@ long get_available()
     close(fd);//fclose(file);
     return mem_kb;
 }
-void print_available()
-{
-  long mem_kb=get_available();
-  if(mem_kb!=-1)
-  	printf("MemAvailable:%ld kB \n",mem_kb);
-  else
-  {
-    printf("Please examine Memavaliable.c\n");
-  }
-}
 
 
 

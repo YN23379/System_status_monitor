@@ -3,7 +3,7 @@
 #include"Loadaverage_collector.h"
 #include"stat_cpu_collector.h"
 #include"cpu_Tempreture_collector.h"
-
+#include"logdir.h"
 
 int main()
 {
@@ -28,7 +28,7 @@ int main()
   int i=1;           //记录循环次数
   while(1)
   {
-    
+    log_init();
   	sleep(3);    //cpu_stats采样间隔
     if (read_cpu_stats(&curr_stats) != 1)
   	{
@@ -36,15 +36,18 @@ int main()
     } 
     cpu_usage=calculate_cpu_usage(&prev_stats,&curr_stats);   //更新CPU使用率
   	printf("-----System Status(%d)-----\n",i);
-	  printf("System Load: %f \n",load);
+	  printf("System Load: %.2f \n",load);
 	  printf("MemAvailable:%ld kB \n",mem_kb);
     printf("CPU usage is:%.2f%%\n",cpu_usage);
-    if(temp!=-1||(temp<120&&temp>0) )          //加后面这个是为了再虚拟机上测试
+    if(temp!=-1&&temp<120&&temp>0 )          //加后面这个是为了再虚拟机上测试
     printf("CPU Tempreture:%ld C\n",temp);
-
 	  prev_stats = curr_stats;
+    char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
+	  log_add(1,s,cpu_usage,load,temp,mem_kb);
+    //log_print_all();
     printf("---------------------------\n");
 	  i++;
+    //log_print_all();
 	  sleep(4);
     temp=collect_cpu_temp()/1000;   //更新CPU温度（C)
     load =get_system_load();        //更新负载

@@ -15,7 +15,7 @@ static const char* level_strings[] = {   //level等级
 void log_init()                   //初始化日志系统
 {
     L_head =(LogNode *)malloc(sizeof(LogNode));
-	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/log","a+");
+	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","a+");
 
 	if(log_fp==NULL)
 	{
@@ -68,27 +68,42 @@ void log_add(int level, const char *format, ...)   //有头结点,创建添加�
         char _time[64];
 		char *s=_time;
 		s=gettimedata();
-
-		fprintf(log_fp,"[%s] %s %s \n",s,level_strings[level],newNode->message);
+		fprintf(log_fp,"[%s] %s %s\n",s,level_strings[level],newNode->message);
         fflush(log_fp);  // 立即刷新，确保数据写入磁盘
 	}
 
 }
 //错误：没有处理空链表的情况，函数声明与实际返回类型不一致，缺少时间获取失败的处理
 
-void log_print_all()
+void log_print_recent(int i)
 {
-	int i=1;
-    LogNode *p=L_head->next;
-	char buffer[64];
-	char *s=buffer;
-	s=gettimedata();
-    while(p!=NULL&&i<=10)
-    {
-	 printf("%s 日志节点(%d):\n内容:%s\n",s,i,p->message);
-	 i++;
-	 p=p->next;
-    }
+	FILE *fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","r");
+	if(fp==NULL) perror("Cannot open log\n ");
+	fseek(fp,-1,SEEK_END);    //fseek里,当whence是SEEK_END时，若偏移量是0，则是在最后一个字符之后，读取的话是EOF;
+	//putchar(z);
+	long pos=ftell(fp)-1;
+    char buffer[256];
+	int num=0;  
+	char current_char;
+	while(pos>=0&&num<i)
+	{
+		fseek(fp,-2,SEEK_CUR);
+		current_char=fgetc(fp);     //fp赋值，然后文件指针自动往靠近文件末尾的方向移动一个字节
+		if(current_char=='\n')
+		{ 
+            fgets(buffer, sizeof(buffer), fp);
+			printf("%s",buffer);
+            num++;
+			fseek(fp,-strlen(buffer),SEEK_CUR);
+		}
+		pos--;
+	}
+    fclose(fp);
+}
+void log_clean()
+{
+    
+
 }
 /*int main()
 {

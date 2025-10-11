@@ -44,10 +44,8 @@ int main()
     printf("CPU Tempreture:%ld C\n",temp);
 	  prev_stats = curr_stats;
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
-	  log_add(1,s,cpu_usage,load,temp,mem_kb);
-    
-    if(i==2)                   //每i次打印一下日志
-    log_print_all();
+	  log_add(0,s,cpu_usage,load,temp,mem_kb);
+    log_print_recent(5);
     printf("---------------------------\n");
 	  i++;
 	  sleep(2);

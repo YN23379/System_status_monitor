@@ -1,6 +1,7 @@
 {
     "makefile.configureOnOpen": false,
     "files.associations": {
-        "system_error": "c"
+        "system_error": "c",
+        "cpu_tempreture_collector.h": "c"
     }
 }

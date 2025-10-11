@@ -26,9 +26,10 @@ int main()
     return 1;
   }
   int i=1;           //记录循环次数
+  log_init();
   while(1)
   {
-    log_init();
+    
   	sleep(3);    //cpu_stats采样间隔
     if (read_cpu_stats(&curr_stats) != 1)
   	{
@@ -44,11 +45,12 @@ int main()
 	  prev_stats = curr_stats;
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
 	  log_add(1,s,cpu_usage,load,temp,mem_kb);
-    //log_print_all();
+    
+    if(i==2)                   //每i次打印一下日志
+    log_print_all();
     printf("---------------------------\n");
 	  i++;
-    //log_print_all();
-	  sleep(4);
+	  sleep(2);
     temp=collect_cpu_temp()/1000;   //更新CPU温度（C)
     load =get_system_load();        //更新负载
     mem_kb=get_available();         //更新可用内存（KB）

@@ -8,6 +8,6 @@ typedef struct {
 
 int read_cpu_stats(cpu_status_t *stats);
 float calculate_cpu_usage( const cpu_status_t *prev,const cpu_status_t *curr);
-void print_cpu_usage(const cpu_status_t *prev, const cpu_status_t *curr);
+
 
 #endif

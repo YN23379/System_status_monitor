@@ -1,4 +1,4 @@
-#include "common.h"
+#include"common.h"
 int collect_cpu_temp()
 {
     static int first_failure = 1;
@@ -28,5 +28,7 @@ int collect_cpu_temp()
     long temp=0;
     sscanf(buffer,"%ld",&temp);
     close(fd);
+    if(temp>0&&temp<120)
     return temp;
+    else return 0;
 }

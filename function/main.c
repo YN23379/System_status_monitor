@@ -26,7 +26,6 @@ int main()
     return 1;
   }
   int i=1;           //记录循环次数
-  log_init();
   while(1)
   {
     
@@ -46,7 +45,6 @@ int main()
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
 	  log_add(0,s,cpu_usage,load,temp,mem_kb);
     log_print_recent(5);
-    log_clean();
     printf("---------------------------\n");
 	  i++;
 	  sleep(2);

@@ -5,73 +5,55 @@
   time_t timeL;
 }L;*/
 
-LogLinklist L_head = NULL;       //日志系统头指针
 //LogLinklist L_tail = NULL;
 static FILE *log_fp=NULL;            // 日志输出文件存放位置
 static const char* level_strings[] = {   //level等级
   "INFO", "WARN", "FATAL"
 };
-void log_init()                   //初始化日志系统
+// void log_init()                   //初始化日志系统
+// {
+//     L_head =(LogNode *)malloc(sizeof(LogNode));
+// 	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","a+");
+// 	if(log_fp==NULL)
+// 	{
+// 		perror("Fopen Log file failed");
+// 		fclose(log_fp);
+// 	}
+
+// 	if(L_head==NULL) 
+// 	{
+// 		perror("L_head Init failed");
+// 	}
+// 	L_head->next=NULL;
+// }
+
+void log_add(int level, const char *format, ...)   
 {
-    L_head =(LogNode *)malloc(sizeof(LogNode));
-	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","a+");
-	if(log_fp==NULL)
+    if(level<0||level>2)
 	{
-		perror("Fopen Log file failed");
-		fclose(log_fp);
+		level=0;
 	}
-
-	if(L_head==NULL) 
-	{
-		perror("L_head Init failed");
-	}
-	L_head->next=NULL;
-}
-
-char *gettimedata()  //读取当前时间
-{
-	time_t Nodetime;
-	time(&Nodetime);
-	struct tm *tm_info=localtime(&Nodetime);
-    static char buffer[64];
-	strftime(buffer,sizeof(buffer),"%Y-%m-%d %H:%M:%S",tm_info);
-	return buffer;
-}
-
-void log_add(int level, const char *format, ...)   //有头结点,创建添加新节点
-{
-    LogNode *newNode=(LogNode *)malloc(sizeof(LogNode));
-    if(newNode==NULL)
-    {
-	 perror("Create new Node failed");
-    }
-	//初始化新节点
     
-    newNode->level=level;
-    newNode->next=NULL;
-    //printf("调试前%s\n",format);
-
+    char time_buf[64];
+	time_t now=time(NULL);
+	struct tm *tm_info=localtime(&now);
+	strftime(time_buf,sizeof(time_buf),"%Y-%m-%d %H:%M:%S", tm_info);
+	
+    char message[256];
 	va_list args;                   //可变参数的解析,新节点信息获取
 	va_start(args,format);
-	vsnprintf(newNode->message,sizeof(newNode->message),format,args);
+	vsnprintf(message,sizeof(message),format,args);
 	va_end(args);
-    
-	//printf("调试后:%s\n",newNode->message);
- 
-	newNode->next=L_head->next; 
-	L_head->next=newNode;
+  
 
 	if(log_fp!=NULL)   //日志系统文件输出
 	{
-        char _time[64];
-		char *s=_time;
-		s=gettimedata();
-		fprintf(log_fp,"[%s] %s %s\n",s,level_strings[level],newNode->message);
+		fprintf(log_fp,"[%s] %s %s\n",time_buf,level_strings[level],message);
         fflush(log_fp);  // 立即刷新，确保数据写入磁盘
 	}
 
+
 }
-//错误：没有处理空链表的情况，函数声明与实际返回类型不一致，缺少时间获取失败的处理
 
 void log_print_recent(int i)
 {
@@ -102,6 +84,7 @@ void log_print_recent(int i)
 	}
     fclose(fp);
 }
+
 long int get_file_size(char *file_path)  // 获取文件大小
 { 
     struct stat file_stat;
@@ -111,7 +94,7 @@ long int get_file_size(char *file_path)  // 获取文件大小
          file_size=file_stat.st_size;
 	}
 	else file_size=-1;
-	return file_path;
+	return file_size;
 }
 void log_rollover()
 {

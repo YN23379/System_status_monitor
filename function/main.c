@@ -46,6 +46,7 @@ int main()
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
 	  log_add(0,s,cpu_usage,load,temp,mem_kb);
     log_print_recent(5);
+    log_clean();
     printf("---------------------------\n");
 	  i++;
 	  sleep(2);

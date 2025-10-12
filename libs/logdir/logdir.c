@@ -11,12 +11,10 @@ static FILE *log_fp=NULL;            // 日志输出文件存放位置
 static const char* level_strings[] = {   //level等级
   "INFO", "WARN", "FATAL"
 };
-
 void log_init()                   //初始化日志系统
 {
     L_head =(LogNode *)malloc(sizeof(LogNode));
 	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","a+");
-
 	if(log_fp==NULL)
 	{
 		perror("Fopen Log file failed");
@@ -78,7 +76,7 @@ void log_add(int level, const char *format, ...)   //有头结点,创建添加�
 void log_print_recent(int i)
 {
 	FILE *fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","r");
-	if(fp==NULL) perror("Cannot open log\n ");
+	if(fp==NULL) perror("Cannot open log");
 	fseek(fp,-1,SEEK_END);    //fseek里,当whence是SEEK_END时，若偏移量是0，则是在最后一个字符之后，读取的话是EOF;
 	//putchar(z);
 	long pos=ftell(fp)-1;
@@ -87,33 +85,50 @@ void log_print_recent(int i)
 	char current_char;
 	while(pos>=0&&num<i)
 	{
-		fseek(fp,-2,SEEK_CUR);
+		fseek(fp,-1,SEEK_CUR);
 		current_char=fgetc(fp);     //fp赋值，然后文件指针自动往靠近文件末尾的方向移动一个字节
 		if(current_char=='\n')
 		{ 
+			long before_read=ftell(fp);
             fgets(buffer, sizeof(buffer), fp);
 			printf("%s",buffer);
             num++;
-			fseek(fp,-strlen(buffer),SEEK_CUR);
+			fseek(fp,before_read,SEEK_SET);
+
 		}
 		pos--;
+		fseek(fp,-1,SEEK_CUR);
+
 	}
     fclose(fp);
 }
-void log_clean()
+long int get_file_size(char *file_path)  // 获取文件大小
+{ 
+    struct stat file_stat;
+	long int file_size;
+    if(stat(file_path,&file_stat)==0)
+	{
+         file_size=file_stat.st_size;
+	}
+	else file_size=-1;
+	return file_path;
+}
+void log_rollover()
 {
+	const int MAX_BACKUP_FILES=4;   //最大备份数量，加上原文件就5个
+	char old_path[128];
+    snprintf(old_path,sizeof(old_path),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",MAX_BACKUP_FILES);
+	remove(old_path);  //每次都尝试删除最旧的文件
+
+	for(int i=MAX_BACKUP_FILES-1;i>0;i--)
+	{
+       char old_name[128],new_name[128];
+	   snprintf(old_name,sizeof(old_name),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",i);
+	   snprintf(new_name,sizeof(old_name),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",i+1);
+       rename(old_name,new_name);
+	}
+    rename("/home/devuser/Desktop/code/System_status_monitor/libs/log","/home/devuser/Desktop/code/System_status_monitor/libs/log.1");  
+	//当前日志文件改为第一备份
     
 
 }
-/*int main()
-{
-
-	log_init();
-	int a=111;
-    float cpu_usage=0.1134,loadavg=0.01;
-	int temp=53,Memavailable=54311230;
-    char *s="CPU usage:%.2f%%,System loadavg:%.2f,CPU temp:%d C,Memavailable:%d KB";
-	log_add(1,s,100*cpu_usage,loadavg,temp,Memavailable);
-	log_print_all();
-	return 0;
-}*/

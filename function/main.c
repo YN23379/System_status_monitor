@@ -44,10 +44,10 @@ int main()
     if(tempera!=-1&&tempera<120&&tempera>0 )          //加后面这个是为了再虚拟机上测试
     printf("CPU Tempreture:%ld C\n",tempera);
 	  prev_stats = curr_stats;
-
+    
     //日志记录
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
-    if(get_file_size("/home/devuser/Desktop/code/System_status_monitor/libs/log")>LOG_ROTATE_SIZE)   //日志文件大小判断，是否轮换
+    if(get_file_size("/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir")>LOG_ROTATE_SIZE)   //日志文件大小判断，是否轮换
     log_rollover();
 	  log_add(level,s,cpu_usage,load,tempera,mem_kb);
     log_print_recent(5);

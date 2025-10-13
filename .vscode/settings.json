@@ -2,6 +2,7 @@
     "makefile.configureOnOpen": false,
     "files.associations": {
         "system_error": "c",
-        "cpu_tempreture_collector.h": "c"
+        "cpu_tempreture_collector.h": "c",
+        "cerrno": "c"
     }
 }

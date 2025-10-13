@@ -1,1 +1,11 @@
 [2025-10-13 11:31:30] INFO CPU usage:1.11% , System loadavg:0.09 , CPU temp:4294967 C , Memavailable:5445156 KB
+[2025-10-13 12:29:29] [INFO] CPU usage:0.84% , System loadavg:0.04 , CPU temp:4294967 C , Memavailable:5373348 KB
+[2025-10-13 12:29:34] [INFO] CPU usage:0.90% , System loadavg:0.04 , CPU temp:4294967 C , Memavailable:5373908 KB
+[2025-10-13 12:50:12] [INFO] CPU usage:0.67% , System loadavg:0.05 , CPU temp:4294967 C , Memavailable:5393596 KB
+[2025-10-13 12:50:17] [INFO] CPU usage:0.70% , System loadavg:0.05 , CPU temp:4294967 C , Memavailable:5394428 KB
+[2025-10-13 12:50:22] [INFO] CPU usage:1.10% , System loadavg:0.04 , CPU temp:4294967 C , Memavailable:5390436 KB
+[2025-10-13 13:04:00] [FATAL] CPU usage:1.68% , System loadavg:0.15 , CPU temp:4294967 C , Memavailable:5379128 KB
+[2025-10-13 13:04:05] [FATAL] CPU usage:0.91% , System loadavg:0.14 , CPU temp:4294967 C , Memavailable:5379684 KB
+[2025-10-13 13:04:10] [FATAL] CPU usage:1.16% , System loadavg:0.13 , CPU temp:4294967 C , Memavailable:5379224 KB
+[2025-10-13 13:04:15] [FATAL] CPU usage:1.31% , System loadavg:0.12 , CPU temp:4294967 C , Memavailable:5381044 KB
+[2025-10-13 13:04:21] [FATAL] CPU usage:1.06% , System loadavg:0.11 , CPU temp:4294967 C , Memavailable:5379080 KB

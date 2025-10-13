@@ -8,7 +8,7 @@
 int main()
 {
   //初始数据采集：
-  long temp=collect_cpu_temp()/1000;   //CPU温度（C)
+  long tempera=collect_cpu_temp()/1000;   //CPU温度（C)
   float load =get_system_load();       //负载（1分钟之内系统负载）
   long mem_kb=get_available();         //可用内存（KB）
   float cpu_usage=0.0;                 //CPU使用率（%）
@@ -16,7 +16,7 @@ int main()
 
   if(load==-1.0)
   printf("Please examine Loadaverage.c\n");
-  if(temp==-1) 
+  if(tempera==-1) 
   printf("Please examine cpu_Tempreture_collector.c\n");
   if(mem_kb==-1)
   printf("Please examine Memavaliable.c\n");
@@ -26,6 +26,7 @@ int main()
     return 1;
   }
   int i=1;           //记录循环次数
+  
   while(1)
   {
     
@@ -35,24 +36,25 @@ int main()
       fprintf(stderr, "CPU stats read failed\n");
     } 
     cpu_usage=calculate_cpu_usage(&prev_stats,&curr_stats);   //更新CPU使用率
+    int level= determine_monitor_level(cpu_usage,load,tempera,mem_kb);
   	printf("-----System Status(%d)-----\n",i);
 	  printf("System Load: %.2f \n",load);
 	  printf("MemAvailable:%ld kB \n",mem_kb);
     printf("CPU usage is:%.2f%%\n",cpu_usage);
-    if(temp!=-1&&temp<120&&temp>0 )          //加后面这个是为了再虚拟机上测试
-    printf("CPU Tempreture:%ld C\n",temp);
+    if(tempera!=-1&&tempera<120&&tempera>0 )          //加后面这个是为了再虚拟机上测试
+    printf("CPU Tempreture:%ld C\n",tempera);
 	  prev_stats = curr_stats;
 
     //日志记录
     char *s="CPU usage:%.2f%% , System loadavg:%.2f , CPU temp:%d C , Memavailable:%d KB";
     if(get_file_size("/home/devuser/Desktop/code/System_status_monitor/libs/log")>LOG_ROTATE_SIZE)   //日志文件大小判断，是否轮换
     log_rollover();
-	  log_add(0,s,cpu_usage,load,temp,mem_kb);
+	  log_add(level,s,cpu_usage,load,tempera,mem_kb);
     log_print_recent(5);
     printf("---------------------------\n");
 	  i++;
 	  sleep(2);
-    temp=collect_cpu_temp()/1000;   //更新CPU温度（C)
+    tempera=collect_cpu_temp()/1000;   //更新CPU温度（C)
     load =get_system_load();        //更新负载
     mem_kb=get_available();         //更新可用内存（KB）
   }

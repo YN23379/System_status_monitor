@@ -1,5 +1,5 @@
 #include"logdir.h"
-#define MAXLOGDIR 10   //日志链表的最大节点数
+   //日志链表的最大节点数
 /*static struct{         //日志系统内部判断依据L
   int level;
   time_t timeL;
@@ -20,28 +20,49 @@ void log_init()                   //初始化日志系统
 	}
 }
 
-void log_add(int level, const char *format, ...)   
+int determine_monitor_level(float cpu_usage, float load, long temp, long mem_available) 
 {
+    int final_level = LOG_INFO; // 起始为最低等级
+    
+    // 系统负载判定
+    if (load > 1.0) final_level = LOG_FATAL;
+    else if (load > 0.8 && final_level < LOG_WARN) final_level = LOG_WARN;
+    
+    // 内存判定
+    float available_percent = (mem_available / (float)TOTAL_MEMORY) * 100;
+    if (available_percent < 10) final_level = LOG_FATAL;
+    else if (available_percent < 25 && final_level < LOG_WARN) final_level = LOG_WARN;
+    
+    // CPU使用率判定
+    if (cpu_usage > 90) final_level = LOG_FATAL;
+    else if (cpu_usage > 70 && final_level < LOG_WARN) final_level = LOG_WARN;
+    
+    // 温度判定
+    if (temp > 85) final_level = LOG_FATAL;
+    else if (temp > 70 && final_level < LOG_WARN) final_level = LOG_WARN;
+    
+    return final_level;
+}
+
+void log_add(int level,const char *format, ...)   
+{
+	if(level<0||level>2)
+	perror("Level error");
 	log_init();
-    if(level<0||level>2)
-	{
-		level=0;
-	}
     char time_buf[64];
 	time_t now=time(NULL);
 	struct tm *tm_info=localtime(&now);
 	strftime(time_buf,sizeof(time_buf),"%Y-%m-%d %H:%M:%S", tm_info);
-	
     char message[256];
 	va_list args;                   //可变参数的解析,新节点信息获取
 	va_start(args,format);
 	vsnprintf(message,sizeof(message),format,args);
 	va_end(args);
-  
-
+    
+    
 	if(log_fp!=NULL)   //日志系统文件输出
 	{
-		fprintf(log_fp,"[%s] %s %s\n",time_buf,level_strings[level],message);
+		fprintf(log_fp,"[%s] [%s] %s\n",time_buf,level_strings[level],message);
         fflush(log_fp);  // 立即刷新，确保数据写入磁盘
 	}
 	fclose(log_fp);
@@ -80,11 +101,9 @@ void log_print_recent(int i)
 			printf("%s",buffer);
             num++;
 			fseek(log_fp,before_read,SEEK_SET);
-
 		}
 		pos--;
 		fseek(log_fp,-1,SEEK_CUR);
-
 	}
     fclose(log_fp);
 }

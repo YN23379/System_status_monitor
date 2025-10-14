@@ -5,6 +5,7 @@
 #include<string.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include<sys/file.h>
 
 #define MAXLOGDIR 10
 #define LOG_ROTATE_SIZE (1 * 1024 * 1024) // 1MB 日志文件大小限制

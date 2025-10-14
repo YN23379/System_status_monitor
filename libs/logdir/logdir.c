@@ -12,7 +12,7 @@ static const char* level_strings[] = {   //level等级
 };
 void log_init()                   //初始化日志系统
 {
-	log_fp=fopen("/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir","a+");
+	log_fp=fopen("/home/devuser/Desktop/code/System_status_monitor/libs/log","a+");
 	if(log_fp==NULL)
 	{
 		perror("Fopen Log file failed");
@@ -49,6 +49,15 @@ void log_add(int level,const char *format, ...)
 	if(level<0||level>2)
 	perror("Level error");
 	log_init();
+
+	int fd = fileno(log_fp); // 将 FILE* 转换为文件描述符
+    if (flock(fd, LOCK_EX) == -1) // LOCK_EX 表示独占锁（写锁）
+	{ 
+        perror("Failed to lock log file");
+        fclose(log_fp); // 获取锁失败要关闭文件
+        return;
+    }
+
     char time_buf[64];
 	time_t now=time(NULL);
 	struct tm *tm_info=localtime(&now);
@@ -65,6 +74,8 @@ void log_add(int level,const char *format, ...)
 		fprintf(log_fp,"[%s] [%s] %s\n",time_buf,level_strings[level],message);
         fflush(log_fp);  // 立即刷新，确保数据写入磁盘
 	}
+
+	flock(fd, LOCK_UN); //解锁
 	fclose(log_fp);
 }
 
@@ -114,7 +125,7 @@ long int get_file_size(char *file_path)  // 获取文件大小
 	long int file_size;
 	if (stat(file_path, &file_stat) == -1) 
 	{
-    printf("stat失败: %s\n", strerror(errno));
+    printf("获取文件大小失败: %s\n", strerror(errno));
     }
     if(stat(file_path,&file_stat)==0)
 	{
@@ -127,16 +138,16 @@ long int get_file_size(char *file_path)  // 获取文件大小
 void log_rollover()
 {
 	char old_path[128];
-    snprintf(old_path,sizeof(old_path),"/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir.%d",MAX_BACKUP_FILES);
+    snprintf(old_path,sizeof(old_path),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",MAX_BACKUP_FILES);
 	remove(old_path);  //每次都尝试删除最旧的文件
 
 	for(int i=MAX_BACKUP_FILES-1;i>0;i--)
 	{
        char old_name[128],new_name[128];
-	   snprintf(old_name,sizeof(old_name),"/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir.%d",i);
-	   snprintf(new_name,sizeof(old_name),"/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir.%d",i+1);
+	   snprintf(old_name,sizeof(old_name),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",i);
+	   snprintf(new_name,sizeof(old_name),"/home/devuser/Desktop/code/System_status_monitor/libs/log.%d",i+1);
        rename(old_name,new_name);
 	}
-    rename("/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir","/home/orangepi/code/System_status_monitor/System_status_monitor/libs/logdir.1");  
+    rename("/home/devuser/Desktop/code/System_status_monitor/libs/log","/home/devuser/Desktop/code/System_status_monitor/libs/log.1");  
 	//当前日志文件改为第一备份
 }

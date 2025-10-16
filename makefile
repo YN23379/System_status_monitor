@@ -1,11 +1,12 @@
 # 调试版本 - 显示所有信息
 CC := gcc
-CFLAGS := -Iinclude -Ilibs/logdir -Wall -Wextra -g -lm
-# -Iinclude -Ilibs/logdir: 添加两个头文件路径
+CFLAGS := -Iinclude -Ilibs/logdir -Wall -Wextra -g
+# -Iinclude -Ilibs/logdir: 添加两个头文件路径  
 # -Wall: 开启所有警告
-# -Wextra: 额外警告  
+# -Wextra: 额外警告
 # -g: 生成调试信息
-# -lm: 链接数学库
+
+LDFLAGS := -lm  # 链接数学库
 
 SRC_DIR := function libs/logdir
 BUILD_DIR := build
@@ -27,12 +28,12 @@ $(info === 调试结束 ===)
 # 最终目标
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(OBJECTS) -o $@ $(CFLAGS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)  # 使用 LDFLAGS
 
-# 生成目标文件的规则
+# 生成目标文件的规则  
 $(BUILD_DIR)/%.o: %.c
 	@mkdir -p $(dir $@)  # 确保目标文件目录存在
-	$(CC) $(CFLAGS) -c $< -o $@  # 编译源文件到目标文件
+	$(CC) $(CFLAGS) -c $< -o $@  # 使用 CFLAGS
 
 # 清理生成的文件
 clean:

@@ -24,7 +24,7 @@ $(info SOURCES找到的文件: $(SOURCES))
 $(info OBJECTS: $(OBJECTS))
 $(info === 调试结束 ===)
 
-# 最终目标
+# 编译生成app
 $(TARGET): $(OBJECTS)
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(OBJECTS) -o $@ $(CFLAGS)

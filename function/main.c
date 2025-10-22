@@ -41,7 +41,7 @@ int main()
 	  printf("System Load: %.2f \n",load);
 	  printf("MemAvailable:%ld kB \n",mem_kb);
     printf("CPU usage is:%.2f%%\n",cpu_usage);
-    if(tempera!=-1&&tempera<120&&tempera>0 )          //加后面这个是为了再虚拟机上测试
+    //if(tempera!=-1&&tempera<120&&tempera>0 )          //加后面这个是为了再虚拟机上测试
     printf("CPU Tempreture:%ld C\n",tempera);
 	  prev_stats = curr_stats;
     

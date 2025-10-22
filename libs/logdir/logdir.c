@@ -16,7 +16,6 @@ void log_init()                   //初始化日志系统
 	if(log_fp==NULL)
 	{
 		perror("Fopen Log file failed");
-		fclose(log_fp);
 	}
 }
 
@@ -62,6 +61,7 @@ void log_add(int level,const char *format, ...)
 	time_t now=time(NULL);
 	struct tm *tm_info=localtime(&now);
 	strftime(time_buf,sizeof(time_buf),"%Y-%m-%d %H:%M:%S", tm_info);
+	
     char message[256];
 	va_list args;                   //可变参数的解析,新节点信息获取
 	va_start(args,format);

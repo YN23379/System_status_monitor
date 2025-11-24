@@ -15,6 +15,7 @@ float get_system_load() {
       close(fd);
       return -1.0;
     }
+  
     //if(!fp) return -1.0;
     float load;
     char buffer[60];

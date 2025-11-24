@@ -9,7 +9,6 @@ long get_available()
         if(first_failure)
         {
             perror("Open /proc/meminfo failed");
-            close(fd);
             first_failure=0;
         }
         return -1;
@@ -17,7 +16,8 @@ long get_available()
     /*下面不可行，porc是虚拟文件，不支持lseek操作 
     // 获取文件大小
     off_t file_size = lseek(fd, 0, SEEK_END);
-    if (file_size == -1) {
+    if (file_size == -1) 
+    {
         perror("lseek meminfo failed");
         close(fd);
         return -1;

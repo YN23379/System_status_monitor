@@ -10,13 +10,13 @@ int collect_cpu_temp()
             perror("Open /sys/class/thermal/ failed");
             first_failure = 0;
         }
-        close(fd);
+        //close(fd);fd是-1时close（fd）是未定义行为
         return -1;
     }
     char buffer[10];
     ssize_t byteread=read(fd,buffer,sizeof(buffer)-1);
     if(byteread==-1)
-    { 
+    {
         if(first_failure)
         {
             perror("Read /sys/class/thermal/ failed");

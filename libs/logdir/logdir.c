@@ -1,5 +1,5 @@
 #include"logdir.h"
-   //日志链表的最大节点数
+//日志链表的最大节点数
 /*static struct{         //日志系统内部判断依据L
   int level;
   time_t timeL;
@@ -63,7 +63,7 @@ void log_add(int level,const char *format, ...)
 	strftime(time_buf,sizeof(time_buf),"%Y-%m-%d %H:%M:%S", tm_info);
 	
     char message[256];
-	va_list args;                   //可变参数的解析,新节点信息获取
+	va_list args;               
 	va_start(args,format);
 	vsnprintf(message,sizeof(message),format,args);
 	va_end(args);

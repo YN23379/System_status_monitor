@@ -27,7 +27,7 @@ int read_cpu_stats(cpu_status_t *stats)
         close(fd);
         return -1;
     }
-    int flag=-1;
+    int flag=-1; 
     buffer[byteread]='\0';
     char *line=strstr(buffer,"cpu ");
     if(line!=NULL)
